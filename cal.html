@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple jQuery Calculator</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f4f4f4;
+      font-family: 'Arial', sans-serif;
+    }
+    .calculator {
+      width: 300px;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .display {
+      width: 100%;
+      height: 50px;
+      font-size: 24px;
+      border: none;
+      background: #f9f9f9;
+      text-align: right;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .button {
+      padding: 15px;
+      font-size: 18px;
+      background: #e0e0e0;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .button.operator {
+      background: #f9a825;
+      color: white;
+    }
+    .button.equal {
+      background: #4caf50;
+      color: white;
+      grid-column: span 4;
+    }
+    .button.clear {
+      background: #d32f2f;
+      color: white;
+    }
+    .button:hover {
+      background: #d6d6d6;
+    }
+  </style>
+</head>
+<body>
+
+<div class="calculator">
+  <input type="text" class="display" id="display" disabled />
+  <div class="buttons">
+    <button class="button clear" id="clear">C</button>
+    <button class="button" id="backspace">←</button>
+    <button class="button operator" data-value="%">%</button>
+    <button class="button operator" data-value="/">÷</button>
+
+    <button class="button" data-value="7">7</button>
+    <button class="button" data-value="8">8</button>
+    <button class="button" data-value="9">9</button>
+    <button class="button operator" data-value="*">×</button>
+
+    <button class="button" data-value="4">4</button>
+    <button class="button" data-value="5">5</button>
+    <button class="button" data-value="6">6</button>
+    <button class="button operator" data-value="-">−</button>
+
+    <button class="button" data-value="1">1</button>
+    <button class="button" data-value="2">2</button>
+    <button class="button" data-value="3">3</button>
+    <button class="button operator" data-value="+">+</button>
+
+    <button class="button" data-value="0">0</button>
+    <button class="button" data-value=".">.</button>
+    <button class="button equal" id="equal">=</button>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function() {
+    let expression = '';
+
+    function updateDisplay(value) {
+      expression += value;
+      $('#display').val(expression);
+    }
+
+    $('.button').on('click', function() {
+      const value = $(this).data('value');
+      if (value !== undefined) {
+        updateDisplay(value);
+      }
+    });
+
+    $('#clear').on('click', function() {
+      expression = '';
+      $('#display').val('');
+    });
+
+    $('#backspace').on('click', function() {
+      expression = expression.slice(0, -1);
+      $('#display').val(expression);
+    });
+
+    $('#equal').on('click', function() {
+      calculateResult();
+    });
+
+    $(document).on('keydown', function(e) {
+      const key = e.key;
+      if (/\d/.test(key) || ['+', '-', '*', '/', '.'].includes(key)) {
+        updateDisplay(key);
+      } else if (key === 'Enter') {
+        calculateResult();
+      } else if (key === 'Backspace') {
+        expression = expression.slice(0, -1);
+        $('#display').val(expression);
+      }
+    });
+
+    function calculateResult() {
+      try {
+        expression = expression.replace(/%/g, '/100');
+        const result = eval(expression);
+        $('#display').val(result);
+        expression = result.toString();
+      } catch {
+        $('#display').val('Error');
+        expression = '';
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
